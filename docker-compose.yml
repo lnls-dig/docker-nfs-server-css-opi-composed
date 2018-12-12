@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  nfs-server:
+    image: lnls/nfs-server
+    ports:
+      - "111:111/tcp"
+      - "111:111/udp"
+      - "2049:2049/tcp"
+      - "2049:2049/udp"
+      - "32765-32769:32765-32769/tcp"
+      - "32765-32769:32765-32769/udp"
+    depends_on:
+      - sirius-diagnostics-epics-screens
+    container_name: nfs-server-css-opi
+    command: ["/exports/sirius-diagnostics-epics-screens,*,ro,async",
+    ]
+    volumes:
+      - type: volume
+        source: sirius-diagnostics-epics-screens-volume
+        target: /exports/sirius-diagnostics-epics-screens
+        volume:
+          read_only: true
+    privileged: true
+
+  sirius-diagnostics-epics-screens:
+    image: lnlsdig/sirius-diagnostics-epics-screens
+    container_name: sirius-diagnostics-epics-screens
+    volumes:
+      - type: volume
+        source: sirius-diagnostics-epics-screens-volume
+        target: /sirius-diagnostics-epics-screens
+        volume:
+          read_only: true
+
+volumes:
+  sirius-diagnostics-epics-screens-volume:
